@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import DemoLoginButton from "@/components/DemoLoginButton";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -90,6 +91,20 @@ export default function RegisterPage() {
               {loading ? "Creating account…" : "Create account"}
             </button>
           </form>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/10" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase tracking-wide">
+              <span className="bg-[#141a2b] px-3 text-slate-500">or</span>
+            </div>
+          </div>
+
+          <DemoLoginButton className="w-full rounded-lg border border-white/15 bg-white/5 py-2.5 text-sm font-semibold text-white hover:bg-white/10 disabled:opacity-60" />
+          <p className="mt-2 text-center text-xs text-slate-500">
+            Skip signup and explore with sample data.
+          </p>
 
           <p className="mt-6 text-center text-sm text-slate-400">
             Already have an account?{" "}

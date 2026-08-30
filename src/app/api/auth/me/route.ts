@@ -1,4 +1,5 @@
 import { getCurrentUser, isPremiumActive } from "@/lib/auth";
+import { isDemoUser } from "@/lib/demo";
 import { isSupabaseEnabled } from "@/lib/supabase";
 import { hoursLeft, PREMIUM_HOURS, PREMIUM_PRICE, PREMIUM_CURRENCY } from "@/lib/plans";
 
@@ -17,7 +18,12 @@ export async function GET() {
       premiumUntil: user.premiumUntil,
       premiumActive: isPremiumActive(user),
       premiumHoursLeft: hoursLeft(user.premiumUntil),
-      authProvider: isSupabaseEnabled() ? "supabase" : "local",
+      isDemo: isDemoUser(user),
+      authProvider: isDemoUser(user)
+        ? "demo"
+        : isSupabaseEnabled()
+          ? "supabase"
+          : "local",
       price: PREMIUM_PRICE,
       currency: PREMIUM_CURRENCY,
       passHours: PREMIUM_HOURS,
