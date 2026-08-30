@@ -1,4 +1,5 @@
 import Link from "next/link";
+import DemoLoginButton from "@/components/DemoLoginButton";
 
 function Feature({ icon, title, desc }: { icon: string; title: string; desc: string }) {
   return (
@@ -67,6 +68,10 @@ export default function Home() {
             >
               View predictions
             </Link>
+            <DemoLoginButton
+              label="Try demo"
+              className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-6 py-3 text-sm font-semibold text-emerald-300 hover:bg-emerald-500/20"
+            />
           </div>
         </div>
       </section>

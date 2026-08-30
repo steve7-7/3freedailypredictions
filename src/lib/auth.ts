@@ -1,12 +1,35 @@
-import { scryptSync, randomBytes, timingSafeEqual } from "crypto";
+import { scryptSync, randomBytes, randomUUID, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 import { db } from "@/db";
 import { users, sessions } from "@/db/schema";
 import { eq, and, gt } from "drizzle-orm";
 import type { User } from "@/db/schema";
 
-const SESSION_COOKIE = "fp_session";
+export const SESSION_COOKIE = "fp_session";
 const SESSION_DAYS = 30;
+
+export type SessionCookie = {
+  token: string;
+  expiresAt: Date;
+};
+
+export function sessionCookieOptions(expiresAt: Date) {
+  return {
+    httpOnly: true,
+    sameSite: "lax" as const,
+    path: "/",
+    expires: expiresAt,
+  };
+}
+
+export async function createSessionRecord(userId: number): Promise<SessionCookie> {
+  const expiresAt = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000);
+  const [session] = await db
+    .insert(sessions)
+    .values({ token: randomUUID(), userId, expiresAt })
+    .returning();
+  return { token: session.token, expiresAt };
+}
 
 export function hashPassword(password: string): string {
   const salt = randomBytes(16).toString("hex");
@@ -24,19 +47,10 @@ export function verifyPassword(password: string, stored: string): boolean {
 }
 
 export async function createSession(userId: number): Promise<string> {
-  const expiresAt = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000);
-  const [session] = await db
-    .insert(sessions)
-    .values({ userId, expiresAt })
-    .returning();
+  const { token, expiresAt } = await createSessionRecord(userId);
   const jar = await cookies();
-  jar.set(SESSION_COOKIE, session.token, {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    expires: expiresAt,
-  });
-  return session.token;
+  jar.set(SESSION_COOKIE, token, sessionCookieOptions(expiresAt));
+  return token;
 }
 
 export async function destroySession(): Promise<void> {

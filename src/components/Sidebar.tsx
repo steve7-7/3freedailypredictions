@@ -18,10 +18,12 @@ export default function Sidebar({
   name,
   email,
   premiumActive,
+  isDemo = false,
 }: {
   name: string;
   email: string;
   premiumActive: boolean;
+  isDemo?: boolean;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -93,6 +95,12 @@ export default function Sidebar({
               );
             })}
           </nav>
+
+          {isDemo && (
+            <div className="mb-3 rounded-xl border border-sky-500/30 bg-sky-500/10 px-3 py-2 text-xs leading-relaxed text-sky-200">
+              You&apos;re in a demo session with sample VIP tips. Sign out anytime and create a real account.
+            </div>
+          )}
 
           <div className="mt-4 rounded-xl border border-white/10 bg-white/5 p-3">
             <div className="flex items-center gap-3">
